@@ -1,0 +1,15 @@
+Hey! Hope you are doing awesome! 
+
+1> Main code is in letsride
+2> I have treated views as a router and controller as controller
+3> I dont have any authorizations if you wanna use this code please make sure you have token validation
+4> Keeping passwords in Config is extrely unsafe. Will Upload a encrypter and decrypter. Which can then be used.
+
+5> I havent touched Delivery app cause its main and only wish to work on some UIs
+6>AssetTransportation takes more of object oritented approach. I did not prefer that for this project but can act as a good reference for it.
+
+7> for any new apis please make sure to create mapping in letsride/urls.py . COntrol over what api s to be used becomes extremly easy
+8> will upload requirnment.txt file later if i dont please leave a comment
+
+9> delivery.sql is extremly basic table formulation. As you can see there are many reduntend columns in multiple tables. 
+So try skipping those. i just put it as its my first draft with a timeset
