@@ -44,3 +44,33 @@ def createRiderTravel(request):
             return generic_controller.creater_travel_details(order_details)
         return JsonResponse("Failed to accept order", safe=False)
 
+@csrf_exempt
+def getRequestHistory(request):
+    if request.method == 'GET':
+        #,customer_id=0,start_date='',end_date='',date_order='',status='',asset_type=''
+        customer_id = request.GET.get('customer_id', 0)
+        start_date = request.GET.get('start_date', '')
+        end_date = request.GET.get('end_date', '')
+        date_order = request.GET.get('date_order', '')
+        status = request.GET.get('status', '')
+        asset_type = request.GET.get('asset_type', '')
+        if customer_id != 0:
+            if str.upper(status) in ['','EXIPRED','PENDING']:
+                return generic_controller.get_request_history(customer_id,start_date,end_date,date_order,status, asset_type)
+            else:
+                return JsonResponse("Please select correct status", safe=False)
+        else:
+            return JsonResponse("Cannot show history of guest, Please Login", safe=False)
+    return JsonResponse("Failed to get order history", safe=False)
+
+@csrf_exempt
+def getMatchedDeliveryOptions(request):
+    if request.method == 'GET':
+        #,customer_id=0,start_date='',end_date='',date_order='',status='',asset_type=''
+        customer_id = request.GET.get('customer_id', 0)
+        if customer_id != 0:
+            return generic_controller.get_matched_delivery_options(customer_id)
+        else:
+            return JsonResponse("Cannot show history of guest, Please Login", safe=False)
+    return JsonResponse("Failed to get order history", safe=False)
+

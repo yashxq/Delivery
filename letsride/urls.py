@@ -5,7 +5,10 @@ from letsride import views
 urlpatterns =[
     re_path(r'riderInfo',views.riderInfo),
     re_path(r'createOrder',views.createOrder),
-    re_path(r'createRiderTravel',views.createRiderTravel)
+    re_path(r'createRiderTravel',views.createRiderTravel),
+    re_path(r'getRequestHistory',views.getRequestHistory),
+    re_path(r'getMatchedDeliveryOptions',views.getMatchedDeliveryOptions)
+
 ]
 
 #from django.urls import include, re_path
