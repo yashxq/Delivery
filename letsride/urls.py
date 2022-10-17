@@ -7,7 +7,8 @@ urlpatterns =[
     re_path(r'createOrder',views.createOrder),
     re_path(r'createRiderTravel',views.createRiderTravel),
     re_path(r'getRequestHistory',views.getRequestHistory),
-    re_path(r'getMatchedDeliveryOptions',views.getMatchedDeliveryOptions)
+    re_path(r'getMatchedDeliveryOptions',views.getMatchedDeliveryOptions),
+    re_path(r'assignRiderToOrder',views.assignRiderToOrder)
 
 ]
 

@@ -4,12 +4,16 @@ from letsride.config import HOSTNAME, USERNAME, PASSWORD, DATABASE,SCHEMA, DEFAU
 from rest_framework.response import Response
 from django.http.response import JsonResponse
 import datetime
+from decryptor import PassKeyDecrypter
 
 
 class generic_controller():
     @staticmethod
     def first_function(id):
-        mydb = mysql.connector.connect(host=HOSTNAME,user=USERNAME,password=PASSWORD,database=DATABASE, auth_plugin='mysql_native_password')
+        password_obj = PassKeyDecrypter()
+        passw = password_obj.decrypt_password()
+
+        mydb = mysql.connector.connect(host=HOSTNAME,user=USERNAME,password=passw,database=DATABASE, auth_plugin='mysql_native_password')
         cur = mydb.cursor()
 
         select_statement = """select * from {schema}.rider_info""".format(schema=SCHEMA)
@@ -23,7 +27,10 @@ class generic_controller():
     @staticmethod
     def creater_order(data):
         try:
-            mydb = mysql.connector.connect(host=HOSTNAME,user=USERNAME,password=PASSWORD,database=DATABASE, auth_plugin='mysql_native_password')
+            password_obj = PassKeyDecrypter()
+            passw = password_obj.decrypt_password()
+
+            mydb = mysql.connector.connect(host=HOSTNAME,user=USERNAME,password=passw,database=DATABASE, auth_plugin='mysql_native_password')
             cur = mydb.cursor()
 
             select_statement = """select max(order_id)+1 new_order_id from {schema}.order_details""".format(schema=SCHEMA)
@@ -50,7 +57,10 @@ class generic_controller():
 
     def creater_travel_details(data):
         try:
-            mydb = mysql.connector.connect(host=HOSTNAME,user=USERNAME,password=PASSWORD,database=DATABASE, auth_plugin='mysql_native_password')
+            password_obj = PassKeyDecrypter()
+            passw = password_obj.decrypt_password()
+
+            mydb = mysql.connector.connect(host=HOSTNAME,user=USERNAME,password=passw,database=DATABASE, auth_plugin='mysql_native_password')
             cur = mydb.cursor()
 
             select_statement = """select firstName,lastName from {schema}.customer_info where customer_id={customer_id}""".format(schema=SCHEMA,customer_id=data['customer_id'])
@@ -79,7 +89,10 @@ class generic_controller():
 
     def get_request_history(customer_id,start_date,end_date,date_order,status, asset_type):
         try:
-            mydb = mysql.connector.connect(host=HOSTNAME,user=USERNAME,password=PASSWORD,database=DATABASE, auth_plugin='mysql_native_password')
+            password_obj = PassKeyDecrypter()
+            passw = password_obj.decrypt_password()
+
+            mydb = mysql.connector.connect(host=HOSTNAME,user=USERNAME,password=passw,database=DATABASE, auth_plugin='mysql_native_password')
             cur = mydb.cursor()
 
             if start_date=="":
@@ -121,9 +134,18 @@ class generic_controller():
 
     def get_matched_delivery_options(customer_id):
         try:
-            #mkm
-            mydb = mysql.connector.connect(host=HOSTNAME,user=USERNAME,password=PASSWORD,database=DATABASE, auth_plugin='mysql_native_password')
+            password_obj = PassKeyDecrypter()
+            passw = password_obj.decrypt_password()
+
+            mydb = mysql.connector.connect(host=HOSTNAME,user=USERNAME,password=passw,database=DATABASE, auth_plugin='mysql_native_password')
             cur = mydb.cursor()
+
+            # get request of only customer_id
+            # for request that havent been assigned we want to see posible matches
+            # no of items customer wants to move should be less then items rider is ready to carry
+            ### --- IMP ---------
+            # if request is flexible then we have buffer of 1 day up and down when package can be delivered. THis 1 day can be changed
+            ## ------------------
 
             select_statement = """ select order_id, origin_address, delivery_address, receiver_details, no_of_items, asset_type, asset_senstivity, pick_up_flexible, rid.rider_id avaiable_rider,concat(firstName,' ',lastName) rider_name from {schema}.order_details ordl
            inner join delivery.rider_info rid on ordl.origin_address=rid.source_address and ordl.delivery_address=rid.destination_address 
@@ -144,5 +166,31 @@ class generic_controller():
             print(e)
             res = "Order Creation failed" +str(e)
             return JsonResponse(res, safe=False)
+
+    def assign_rider_to_request(order_id,rider_id):
+        try:
+            password_obj = PassKeyDecrypter()
+            passw = password_obj.decrypt_password()
+
+            mydb = mysql.connector.connect(host=HOSTNAME,user=USERNAME,password=passw,database=DATABASE, auth_plugin='mysql_native_password')
+            cur = mydb.cursor()
+
+            update_statement = """update {schema}.order_details set rider_id={rider_id} where order_id={order_id}""".format(schema=SCHEMA,rider_id=rider_id,order_id=order_id)
+
+            cur.execute(update_statement)
+            mydb.commit()
+            
+
+            return JsonResponse("Delivery Assigned Succesfully", safe=False)
+
+        except Exception as e:
+            print(e)
+            res = "Order Creation failed" +str(e)
+            return JsonResponse(res, safe=False)
+
+
+
+
+
 
 

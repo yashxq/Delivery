@@ -2,7 +2,7 @@
 #from config import 
 HOSTNAME='localhost'
 USERNAME='root'
-PASSWORD='123456'
+PASSWORD=''
 DATABASE='delivery'
 SCHEMA='delivery'
 DEFAULT_START_DATE='2000-01-01 00:00:00'

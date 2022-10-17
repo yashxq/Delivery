@@ -74,3 +74,13 @@ def getMatchedDeliveryOptions(request):
             return JsonResponse("Cannot show history of guest, Please Login", safe=False)
     return JsonResponse("Failed to get order history", safe=False)
 
+@csrf_exempt 
+def assignRiderToOrder(request):
+    if request.method == 'POST':
+        order_details = JSONParser().parse(request)
+        if order_details['order_id']!=0 or order_details['rider_id']!=0:
+            return generic_controller.assign_rider_to_request(order_details['order_id'],order_details['rider_id'])
+        else:
+            return JsonResponse("Cannot assign rider ", safe=False)
+    return JsonResponse("Failed to get order history", safe=False)
+
