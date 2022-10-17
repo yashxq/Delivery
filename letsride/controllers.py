@@ -147,15 +147,18 @@ class generic_controller():
             # if request is flexible then we have buffer of 1 day up and down when package can be delivered. THis 1 day can be changed
             ## ------------------
 
-            select_statement = """ select order_id, origin_address, delivery_address, receiver_details, no_of_items, asset_type, asset_senstivity, pick_up_flexible, rid.rider_id avaiable_rider,concat(firstName,' ',lastName) rider_name from {schema}.order_details ordl
+            select_statement = """ select order_id, origin_address, delivery_address, receiver_details, no_of_items, asset_type, asset_senstivity, pick_up_flexible, rid.rider_id avaiable_rider,concat(firstName,' ',lastName) rider_name,ordl.rider_id from {schema}.order_details ordl
            inner join delivery.rider_info rid on ordl.origin_address=rid.source_address and ordl.delivery_address=rid.destination_address 
-           where ordl.rider_id = 0 and requester_id={customer_id} and no_of_items <= asset_quantity and 
+           where requester_id={customer_id} and no_of_items <= asset_quantity and 
            case when pick_up_flexible='yes' then ordl.pick_up_time between date_sub(rid.movement_date, interval 1 Day) and date_add(rid.movement_date, interval 1 Day) else ordl.pick_up_time = rid.movement_date end""".format(schema=SCHEMA,customer_id=customer_id)
             cur.execute(select_statement)
             res = cur.fetchall()
             output=[]
             for u in res:
-                output.append({"order_id":u[0], "from":u[1],"to":u[2],"whome_to_deliver":u[3], "no_of_people": u[4], "asset_type":u[5], "asset_senstivity": u[6], "rider_id":u[8], "rider_name": u[9]})
+                status = "Not Applied"
+                if u[10]!=0:
+                    status = "Applied"
+                output.append({"order_id":u[0], "from":u[1],"to":u[2],"whome_to_deliver":u[3], "no_of_people": u[4], "asset_type":u[5], "asset_senstivity": u[6], "rider_id":u[8], "rider_name": u[9],"status":status})
 
             if len(output)==0:
                 return JsonResponse("Sorry could not get matching details all your requests", safe=False)
