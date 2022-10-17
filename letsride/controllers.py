@@ -178,7 +178,7 @@ class generic_controller():
             mydb = mysql.connector.connect(host=HOSTNAME,user=USERNAME,password=passw,database=DATABASE, auth_plugin='mysql_native_password')
             cur = mydb.cursor()
 
-            update_statement = """update {schema}.order_details set rider_id={rider_id} where order_id={order_id}""".format(schema=SCHEMA,rider_id=rider_id,order_id=order_id)
+            update_statement = """update {schema}.order_details set rider_id={rider_id} and updated_dattime=now() where order_id={order_id}""".format(schema=SCHEMA,rider_id=rider_id,order_id=order_id)
 
             cur.execute(update_statement)
             mydb.commit()
